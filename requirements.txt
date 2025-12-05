@@ -1,0 +1,10 @@
+pywinauto
+pyperclip
+keyboard
+psutil
+pywin32
+pystray
+Pillow
+pyinstaller
+pystray
+Pillow
