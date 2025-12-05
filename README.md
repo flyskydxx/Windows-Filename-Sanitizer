@@ -24,6 +24,33 @@
 1.  **剪贴板自动净化**：当你复制包含非法字符（如 `|`, `*`, `?`）的文本时，它会自动将其替换为下划线 `_`，方便你直接粘贴。
 2.  **对话框自动修正**：自动检测活动的 "另存为" (Save As) 窗口，如果文件名输入框中包含非法字符，会自动修正。
 
+## 安装与运行
+
+你需要安装 Python 环境。
+
+1.  安装依赖：
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+2.  运行程序：
+    ```bash
+    python main.py
+    ```
+
+3.  保持程序在后台运行即可。
+
+## 打包为 EXE (可选)
+
+如果你想生成一个独立的 .exe 文件，可以使用 pyinstaller：
+
+```bash
+pip install pyinstaller
+pyinstaller --onefile --noconsole main.py
+```
+
+生成的文件位于 `dist/main.exe`。
+
 ## 注意事项
 
 - 程序需要识别窗口标题，目前支持中文 "另存为" 和英文 "Save As"。
