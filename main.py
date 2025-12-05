@@ -2,10 +2,12 @@ import time
 import sys
 import os
 import threading
-import keyboard
 import pyperclip
 from pywinauto import Application
 import win32gui
+import win32event
+import win32api
+import winerror
 import winreg
 import ctypes
 from PIL import Image
@@ -128,9 +130,10 @@ def is_startup_enabled(item):
         return False
 
 def show_about(icon, item):
+    # Show about dialog in a separate thread to avoid blocking the tray icon
     def _show():
         ctypes.windll.user32.MessageBoxW(0, f"{APP_NAME}\nVersion: {VERSION}\nAuthor: {AUTHOR}", "About", 0)
-    threading.Thread(target=_show, daemon=True).start()
+    threading.Thread(target=_show, daemon=True).start() #作用是避免阻塞托盘图标，使用线程来显示对话框，target=_show表示线程执行的函数，daemon=True表示该线程为守护线程，主程序退出时该线程会自动结束。
 
 def quit_app(icon, item):
     global RUNNING
@@ -138,6 +141,13 @@ def quit_app(icon, item):
     icon.stop()
 
 def main():
+    # Single Instance Check
+    mutex_name = "Global\\WindowsFilenameSanitizer_Mutex"
+    mutex = win32event.CreateMutex(None, False, mutex_name)
+    if win32api.GetLastError() == winerror.ERROR_ALREADY_EXISTS:
+        ctypes.windll.user32.MessageBoxW(0, "Windows Filename Sanitizer is already running.", "Error", 0x10)
+        return
+
     # Start monitoring threads
     t1 = threading.Thread(target=monitor_clipboard, daemon=True)
     t2 = threading.Thread(target=monitor_dialogs, daemon=True)
