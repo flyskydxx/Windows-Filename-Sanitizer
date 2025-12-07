@@ -19,7 +19,7 @@ CHECK_INTERVAL = 0.5
 TARGET_WINDOW_TITLES = ["Save As", "另存为", "保存图片", "Save Image", "Save File", "保存文件"]
 APP_NAME = "Windows Filename Sanitizer"
 AUTHOR = "MuseMorphy"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 ICON_NAME = "sanitize filename icon.png"
 
 RUNNING = True
@@ -44,8 +44,15 @@ def sanitize_active_dialog():
     try:
         hwnd = win32gui.GetForegroundWindow()
         title = win32gui.GetWindowText(hwnd)
+        class_name = win32gui.GetClassName(hwnd)
         
         if not is_save_dialog(title):
+            return
+
+        # Only process standard Windows dialogs (class #32770)
+        # This prevents accidentally modifying content in apps like Word/Excel 
+        # if the document title happens to contain "Save As"
+        if class_name != "#32770":
             return
 
         app = Application(backend="win32").connect(handle=hwnd)
